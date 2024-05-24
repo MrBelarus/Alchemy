@@ -52,7 +52,7 @@ namespace Alchemy.Editor
 
         public static T GetValue<T>(this SerializedProperty property)
         {
-            return GetNestedObject<T>(property.propertyPath, GetSerializedPropertyRootObject(property));
+            return GetNestedObject<T>(property.propertyPath, GetSerializedPropertyRootObject(property), includeAllBases: true);
         }
 
         public static bool SetValue<T>(this SerializedProperty property, T value)
