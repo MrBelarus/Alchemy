@@ -16,6 +16,19 @@ namespace Alchemy.Inspector
         public OrderAttribute(int order) => Order = order;
         public int Order { get; }
     }
+	
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public sealed class MinMaxSliderAttribute : Attribute
+	{
+        public MinMaxSliderAttribute(float min, float max)
+		{
+            Min = min;
+            Max = max;
+        }
+
+        public float Min { get; }
+        public float Max { get; }
+    }
 
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class ButtonAttribute : Attribute { }

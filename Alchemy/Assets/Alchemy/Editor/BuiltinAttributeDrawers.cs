@@ -136,6 +136,65 @@ namespace Alchemy.Editor.Drawers
             Debug.LogWarning("The LabelWidth attribute currently only supports PropertyField and is ignored for other visual elements.");
         }
     }
+	
+    [CustomAttributeDrawer(typeof(MinMaxSliderAttribute))]
+    public sealed class MinMaxSliderDrawer : AlchemyAttributeDrawer
+	{
+        MinMaxSlider minMaxSlider;
+        FloatField minField;
+        FloatField maxField;
+
+        public override void OnCreateElement()
+		{
+            if (SerializedProperty.propertyType != SerializedPropertyType.Vector2) return;
+
+            minField = new FloatField();
+            maxField = new FloatField();
+
+            minField.value = SerializedProperty.vector2Value.x;
+            maxField.value = SerializedProperty.vector2Value.y;
+
+            minField.style.width = 100;
+            maxField.style.width = 100;
+
+            var minMaxAttribute = (MinMaxSliderAttribute)Attribute;
+            minMaxSlider = new MinMaxSlider(minField.value, maxField.value, minMaxAttribute.Min, minMaxAttribute.Max);
+
+            minMaxSlider.BindProperty(SerializedProperty);
+            minMaxSlider.TrackPropertyValue(SerializedProperty, RefreshMinMaxViewValues);
+
+            minField.RegisterValueChangedCallback(RefreshMinValue);
+            maxField.RegisterValueChangedCallback(RefreshMaxValue);
+
+            TargetElement.Clear();
+
+            minMaxSlider.Insert(0, new Label(SerializedProperty.displayName));
+            minMaxSlider.Insert(1, minField);
+            minMaxSlider.Add(maxField);
+
+            TargetElement.Add(minMaxSlider);
+        }
+
+        private void RefreshMaxValue(ChangeEvent<float> evt)
+		{
+            if (evt.newValue != evt.previousValue) {
+                minMaxSlider.maxValue = evt.newValue;
+            }
+        }
+
+        private void RefreshMinValue(ChangeEvent<float> evt)
+		{
+            if (evt.newValue != evt.previousValue) {
+                minMaxSlider.minValue = evt.newValue;
+            }
+        }
+
+        private void RefreshMinMaxViewValues(SerializedProperty property)
+		{
+            minField.value = property.vector2Value.x;
+            maxField.value = property.vector2Value.y;
+        }
+    }
 
     [CustomAttributeDrawer(typeof(HideIfAttribute))]
     public sealed class HideIfDrawer : TrackSerializedObjectAttributeDrawer
